@@ -1,0 +1,58 @@
+﻿
+@{
+	ViewBag.Title = "Index";
+}
+
+@model PartialUsingAjaxDemo.Models.Report
+
+<h2>Index</h2>
+
+<a href="#" id="add-new-incident-link">Add New Incident</a>
+
+<div id="incident-list-container">
+	@Html.Partial("_ListIncidents", Model.Incidents)
+</div>
+
+<div id="create-incident-form-container"></div>
+
+<script type="text/javascript">
+	$(function () {
+		$('a#add-new-incident-link').click(function () {
+
+			$("#create-incident-form-container").dialog({
+				autoOpen: true,
+				position: { my: "center", at: "top+350", of: window },
+				width: 1000,
+				resizable: false,
+				title: 'Add Incident',
+				modal: true,
+				open: function () {
+					$(this).load('@Url.Action("CreateIncident", "Home")');
+				},
+				buttons: {
+					"Add": function () {
+						createIncident();
+						$(this).dialog("close");
+					},
+					Cancel: function () {
+						$(this).dialog("close");
+					}
+				}
+			});
+			return false;
+		});
+	});
+
+		function createIncident() {
+			$.ajax({
+				url: '@Url.Action("CreateIncident", "Home")',
+				type: 'POST',
+				data: $("#create-incident-form").serialize(),
+				success: function (data) {
+					if (data) {
+						$('div#incident-list-container').html(data);
+					}
+				}
+			});
+		}
+</script>
